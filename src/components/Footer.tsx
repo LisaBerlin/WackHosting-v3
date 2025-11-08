@@ -4,11 +4,13 @@ export default function Footer() {
       <div className="container mx-auto">
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
-            <img
-              src="https://i.imgur.com/EWs3Gsg.png"
-              alt="GameStates Logo"
-              className="h-10 w-auto mb-4"
-            />
+            <a href="https://gamestates.de" aria-label="Go to GameStates homepage">
+              <img
+                src="https://i.imgur.com/EWs3Gsg.png"
+                alt="GameStates Logo"
+                className="h-10 w-auto mb-4"
+              />
+            </a>
             <p className="text-slate-400 text-sm leading-relaxed">
               Premium hosting solutions for gamers worldwide.
             </p>
