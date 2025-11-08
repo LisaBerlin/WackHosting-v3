@@ -31,7 +31,7 @@ export default function Hero() {
             </a>
             <a
               href="https://panel.gamestates.de"
-              className="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold transition-all duration-200 border border-slate-700"
+              className="px-8 py-4 bg-[#f4435c] hover:bg-[#e63b53] text-white rounded-xl font-semibold transition-all duration-200 border border-[#e63b53]"
             >
               Client Login
             </a>
