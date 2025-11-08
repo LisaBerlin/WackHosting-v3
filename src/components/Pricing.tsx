@@ -46,7 +46,7 @@ export default function Pricing() {
 
             <a
               href="https://panel.gamestates.de/orderproduct"
-              className="inline-flex items-center space-x-2 group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-2xl shadow-blue-600/30 hover:shadow-blue-600/50"
+              className="inline-flex items-center space-x-2 group px-8 py-4 bg-gradient-to-r from-[#f4435c] to-[#ff4d69] hover:from-[#e63b53] hover:to-[#ff3f5d] text-white rounded-xl font-semibold transition-all duration-200 shadow-2xl shadow-[rgba(244,67,92,0.30)] hover:shadow-[rgba(244,67,92,0.50)]"
             >
               <span>Order Your Server Now</span>
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
