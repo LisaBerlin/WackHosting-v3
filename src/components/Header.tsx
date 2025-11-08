@@ -9,11 +9,13 @@ export default function Header() {
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <img
-              src="https://i.imgur.com/EWs3Gsg.png"
-              alt="GameStates Logo"
-              className="h-10 w-auto"
-            />
+            <a href="https://gamestates.de" aria-label="Go to GameStates homepage">
+              <img
+                src="https://i.imgur.com/EWs3Gsg.png"
+                alt="GameStates Logo"
+                className="h-10 w-auto"
+              />
+            </a>
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
@@ -40,6 +42,7 @@ export default function Header() {
           <button
             className="md:hidden text-slate-300 hover:text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -61,7 +64,7 @@ export default function Header() {
             </a>
             <a
               href="https://panel.gamestates.de"
-              className="block w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 text-center"
+              className="block w-full px-6 py-2.5 bg-[#f4435c] hover:bg-[#e63b53] text-white rounded-lg font-medium transition-all duration-200 text-center"
             >
               Login
             </a>
