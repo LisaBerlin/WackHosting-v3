@@ -31,7 +31,7 @@ export default function Header() {
             </a>
             <a
               href="https://panel.gamestates.de"
-              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50"
+              className="px-6 py-2.5 bg-[#f4435c] hover:bg-[#e63b53] text-white rounded-lg font-medium transition-all duration-200 shadow-lg shadow-[rgba(244,67,92,0.3)] hover:shadow-[rgba(244,67,92,0.5)]"
             >
               Login
             </a>
