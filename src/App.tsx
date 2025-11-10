@@ -4,6 +4,7 @@ import Services from './components/Services';
 import KVMConfigurator from './components/KVMConfigurator';
 import Features from './components/Features';
 import Pricing from './components/Pricing';
+import ApiDocumentation from './components/ApiDocumentation';
 import Footer from './components/Footer';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <KVMConfigurator />
       <Features />
       <Pricing />
+      <ApiDocumentation />
       <Footer />
     </div>
   );

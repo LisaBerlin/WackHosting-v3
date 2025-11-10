@@ -31,6 +31,9 @@ export default function Header() {
             <a href="#pricing" className="text-slate-300 hover:text-white transition-colors duration-200">
               Pricing
             </a>
+            <a href="#api" className="text-slate-300 hover:text-white transition-colors duration-200">
+              API
+            </a>
             <a
               href="https://panel.gamestates.de"
               className="px-6 py-2.5 bg-[#f4435c] hover:bg-[#e63b53] text-white rounded-lg font-medium transition-all duration-200 shadow-lg shadow-[rgba(244,67,92,0.3)] hover:shadow-[rgba(244,67,92,0.5)]"
@@ -61,6 +64,9 @@ export default function Header() {
             </a>
             <a href="#pricing" className="block text-slate-300 hover:text-white transition-colors duration-200">
               Pricing
+            </a>
+            <a href="#api" className="block text-slate-300 hover:text-white transition-colors duration-200">
+              API
             </a>
             <a
               href="https://panel.gamestates.de"
