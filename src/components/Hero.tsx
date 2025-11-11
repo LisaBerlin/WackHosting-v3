@@ -30,10 +30,15 @@ export default function Hero() {
               <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-200" />
             </a>
             <a
-              href="https://panel.gamestates.de"
+              href="/dashboard"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/dashboard');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
               className="px-8 py-4 bg-[#f4435c] hover:bg-[#e63b53] text-white rounded-xl font-semibold transition-all duration-200 border border-[#e63b53]"
             >
-              Client Login
+              Control Panel
             </a>
           </div>
         </div>

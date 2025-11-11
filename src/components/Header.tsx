@@ -35,7 +35,12 @@ export default function Header() {
               API
             </a>
             <a
-              href="https://panel.gamestates.de"
+              href="/auth"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/auth');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
               className="px-6 py-2.5 bg-[#f4435c] hover:bg-[#e63b53] text-white rounded-lg font-medium transition-all duration-200 shadow-lg shadow-[rgba(244,67,92,0.3)] hover:shadow-[rgba(244,67,92,0.5)]"
             >
               Login
@@ -69,7 +74,12 @@ export default function Header() {
               API
             </a>
             <a
-              href="https://panel.gamestates.de"
+              href="/auth"
+              onClick={(e) => {
+                e.preventDefault();
+                window.history.pushState({}, '', '/auth');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }}
               className="block w-full px-6 py-2.5 bg-[#f4435c] hover:bg-[#e63b53] text-white rounded-lg font-medium transition-all duration-200 text-center"
             >
               Login
