@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://backend.datalix.de/v1';
+const API_BASE_URL = 'https://backend.panel.gamestates.de/v1';
 
 export class ApiClient {
   private apiKey: string;
