@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameStates Hosting Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .dashboard {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard.active {
+            display: block;
+        }
+        
+        .dashboard-header {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dashboard-header h1 {
+            color: #333;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .tabs {
+            background: white;
+            padding: 0;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            display: flex;
+        }
+        
+        .tab {
+            padding: 18px 24px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .tab:hover {
+            background: #f8f9fa;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .content-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .content-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #e1e8ed;
+            padding-bottom: 10px;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e1e8ed;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .card-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        .card-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .card-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .card-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-running {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-stopped {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-starting {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .card-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .form-inline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-inline input,
+        .form-inline select,
+        .form-inline textarea {
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-inline input:focus,
+        .form-inline select:focus,
+        .form-inline textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 1000px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-close {
+            cursor: pointer;
+            font-size: 24px;
+            color: #666;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        select {
+            width: 100%;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginContainer" class="login-container">
+        <h1>🚀 GameStates Panel</h1>
+        <div id="loginError"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="apiKey">API Token</label>
+                <input type="password" id="apiKey" placeholder="Gib deinen API Token ein" required>
+            </div>
+            <button type="submit" class="btn">Anmelden</button>
+        </form>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <div class="dashboard-header">
+            <h1>🚀 GameStates Dashboard</h1>
+            <div class="user-info">
+                <span id="tokenDisplay"></span>
+                <button onclick="logout()" class="btn btn-secondary">Abmelden</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('services')">Services</div>
+            <div class="tab" onclick="switchTab('kvm')">KVM Server</div>
+            <div class="tab" onclick="switchTab('reseller')">Reseller</div>
+            <div class="tab" onclick="switchTab('backup')">Backups</div>
+            <div class="tab" onclick="switchTab('cron')">Cron Jobs</div>
+            <div class="tab" onclick="switchTab('network')">Netzwerk</div>
+        </div>
+
+        <!-- Services Tab -->
+        <div id="services-tab" class="tab-content active">
+            <div class="content-section">
+                <h2>Deine Services</h2>
+                <div id="servicesList" class="loading">
+                    <div class="spinner"></div>
+                    Lade Services...
+                </div>
+            </div>
+        </div>
+
+        <!-- KVM Server Tab -->
+        <div id="kvm-tab" class="tab-content">
+            <div class="content-section">
+                <h2>Verfügbare KVM Server Pakete</h2>
+                <div id="kvmPackets">
+                    <div class="card-grid"></div>
+                </div>
+            </div>
+            
+            <div class="content-section">
+                <h2>Neuen KVM Server bestellen</h2>
+                <form id="orderKVMForm" class="form-inline">
+                    <select id="kvmPacketId" required style="grid-column: 1 / -1;">
+                        <option value="">Paket auswählen</option>
+                        <option value="4785fc89-e49e-47bc-aec2-1af0d44601ef">Sale 2025 S - 3.45 €</option>
+                        <option value="89f9b5e6-2a51-4a54-8670-97dd005d38f9">Sale 2025 M - 4.95 €</option>
+                        <option value="72704317-ccd4-457c-a36a-9070491fec27">Sale 2025 L - 5.95 €</option>
+                        <option value="647ba807-0d83-405a-b816-56983aae3d55">Sale 2025 XL - 7.95 €</option>
+                        <option value="a9793efd-f29d-4b28-9bfd-00a66d6f2339">Sale 2025 XXL - 10.95 €</option>
+                        <option value="1c0b463e-831f-4e37-9c44-5065277de5db">Sale 2025 3XL - 15.95 €</option>
+                        <option value="a9baf89a-edb0-4efa-833c-3a827e3c6070">Sale 2025 5XL - 35.95 €</option>
+                    </select>
+                    <input type="text" id="kvmHostname" placeholder="Hostname" required>
+                    <select id="kvmOS" required>
+                        <option value="">Betriebssystem auswählen</option>
+                        <optgroup label="Linux Systeme">
+                            <option value="8c1a72fa-0b32-4057-a264-d4df8174e2a8">🐧 Debian 10</option>
+                            <option value="26b395d6-0e03-49b3-b04c-043bdfe08b30">🐧 Debian 11</option>
+                            <option value="b7f26674-602b-4098-bc42-695fbdcbd4d9">🐧 Debian 12</option>
+                            <option value="6fde696b-28b6-467a-999a-81b613f4bd1c">🐧 Debian 13</option>
+                            <option value="26d6d7ed-1da6-4317-a5b9-dc5e1b379ec5">🐧 Ubuntu 16.04</option>
+                            <option value="fc0c8805-6eb6-4e3a-a233-09b8c3edd357">🐧 Ubuntu 18.04</option>
+                            <option value="0ebd6527-57c9-48b5-b5b5-ce4b97fba670">🐧 Ubuntu 20.04</option>
+                            <option value="55bb1f2f-bd5b-4c0c-8833-ba121045fa46">🐧 Ubuntu 22.04</option>
+                            <option value="c9afac95-b1a2-4583-9a60-be129a0658df">🐧 Ubuntu 24.04</option>
+                            <option value="b1a9c0ac-cb32-412a-a00e-df078017dcd2">🐧 CentOS 7</option>
+                            <option value="14092080-de13-4ff9-941e-df57334c1a7c">🐧 CentOS 8</option>
+                            <option value="fce43efb-12d0-4900-898f-15007157ff2c">🐧 CentOS 9</option>
+                            <option value="fcdead8c-6023-47ce-ba08-0c4841e7ccc1">🐧 AlmaLinux 8</option>
+                            <option value="8221ab01-2da7-4600-ba86-def303ac3ea2">🐧 AlmaLinux 9</option>
+                            <option value="5ac1a72c-924c-4106-abb1-56645260cde2">🐧 Fedora 40</option>
+                            <option value="fc01b630-658f-490a-bdc1-566e5de19e93">🐧 RockyLinux 9.2</option>
+                        </optgroup>
+                        <optgroup label="Windows Systeme">
+                            <option value="3ff7f3d2-90d4-463c-9925-86927f4bc90b">🪟 Windows Server 2012r2</option>
+                            <option value="6b745427-1934-4aa7-9df1-1a54fa54e279">🪟 Windows Server 2016</option>
+                            <option value="3d3a3e5c-ed2c-4f1e-99fe-d4911a502946">🪟 Windows Server 2019</option>
+                            <option value="d089c1b8-657a-4c44-9a5d-0ac1c3f0182e">🪟 Windows Server 2022</option>
+                            <option value="b4d16d42-c78c-4f0d-b480-b300f313e00c">🪟 Windows Server 2025</option>
+                        </optgroup>
+                    </select>
+                    <input type="password" id="kvmPassword" placeholder="Root/Administrator Passwort" required minlength="8">
+                    <input type="number" id="kvmIPCount" placeholder="Anzahl zusätzlicher IPv4 (optional)" min="0" max="10" value="0">
+                    <input type="number" id="kvmTrafficCount" placeholder="Zusätzlicher Traffic in TB (optional)" min="0" max="50" value="0">
+                    <input type="number" id="kvmDays" placeholder="Laufzeit in Tagen" required min="30" value="30">
+                    <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1;">🚀 Server bestellen</button>
+                </form>
+                <div id="orderKVMResult"></div>
+            </div>
+        </div>
+
+        <!-- Reseller Tab -->
+        <div id="reseller-tab" class="tab-content">
+            <div class="content-section">
+                <h2>Interface Benutzer</h2>
+                <div class="form-inline">
+                    <input type="text" id="interfaceId" placeholder="Interface ID">
+                    <button onclick="loadInterfaceUsers()" class="btn btn-primary">Benutzer laden</button>
+                </div>
+                <div id="interfaceUsers"></div>
+            </div>
+
+            <div class="content-section">
+                <h2>Neuen Benutzer erstellen</h2>
+                <form id="createUserForm" class="form-inline">
+                    <input type="text" id="newUserInterfaceId" placeholder="Interface ID" required>
+                    <input type="text" id="newUsername" placeholder="Username" required>
+                    <input type="email" id="newUserEmail" placeholder="E-Mail" required>
+                    <input type="password" id="newUserPassword" placeholder="Passwort" required>
+                    <button type="submit" class="btn btn-primary">Benutzer erstellen</button>
+                </form>
+                <div id="createUserResult"></div>
+            </div>
+
+            <div class="content-section">
+                <h2>Service verlängern</h2>
+                <form id="extendServiceForm" class="form-inline">
+                    <input type="text" id="extendServiceId" placeholder="Service ID" required>
+                    <input type="number" id="extendDays" placeholder="Tage" required>
+                    <button type="submit" class="btn btn-primary">Service verlängern</button>
+                </form>
+                <div id="extendServiceResult"></div>
+            </div>
+        </div>
+
+        <!-- Backup Tab -->
+        <div id="backup-tab" class="tab-content">
+            <div class="content-section">
+                <h2>Backup Management</h2>
+                <div class="form-inline">
+                    <input type="text" id="backupServiceId" placeholder="Service ID">
+                    <button onclick="loadBackups()" class="btn btn-primary">Backups laden</button>
+                    <button onclick="createBackup()" class="btn btn-success">Backup erstellen</button>
+                </div>
+                <div id="backupsList"></div>
+            </div>
+        </div>
+
+        <!-- Cron Tab -->
+        <div id="cron-tab" class="tab-content">
+            <div class="content-section">
+                <h2>Cron Jobs verwalten</h2>
+                <div class="form-inline">
+                    <input type="text" id="cronServiceId" placeholder="Service ID">
+                    <button onclick="loadCronJobs()" class="btn btn-primary">Cron Jobs laden</button>
+                </div>
+                <div id="cronJobsList"></div>
+            </div>
+
+            <div class="content-section">
+                <h2>Neuen Cron Job erstellen</h2>
+                <form id="createCronForm">
+                    <div class="form-inline">
+                        <input type="text" id="newCronServiceId" placeholder="Service ID" required>
+                        <input type="text" id="newCronName" placeholder="Name" required>
+                        <input type="text" id="newCronExpression" placeholder="Cron Expression (z.B. 0 2 * * *)" required>
+                        <select id="newCronAction" required>
+                            <option value="">Aktion wählen</option>
+                            <option value="start">Start</option>
+                            <option value="stop">Stop</option>
+                            <option value="restart">Restart</option>
+                            <option value="backup">Backup</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cron Job erstellen</button>
+                </form>
+                <div id="createCronResult"></div>
+            </div>
+        </div>
+
+        <!-- Network Tab -->
+        <div id="network-tab" class="tab-content">
+            <div class="content-section">
+                <h2>IP-Adressen verwalten</h2>
+                <div class="form-inline">
+                    <input type="text" id="ipServiceId" placeholder="Service ID">
+                    <button onclick="loadIPs()" class="btn btn-primary">IPs laden</button>
+                </div>
+                <div id="ipsList"></div>
+            </div>
+
+            <div class="content-section">
+                <h2>Reverse DNS setzen</h2>
+                <form id="rdnsForm" class="form-inline">
+                    <input type="text" id="rdnsServiceId" placeholder="Service ID" required>
+                    <input type="text" id="rdnsIP" placeholder="IP-Adresse" required>
+                    <input type="text" id="rdnsValue" placeholder="rDNS Wert" required>
+                    <button type="submit" class="btn btn-primary">rDNS setzen</button>
+                </form>
+                <div id="rdnsResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Service Details</h2>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://backend.panel.gamestates.de/v1';
+        let apiToken = '';
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = document.getElementById('apiKey').value;
+            
+            try {
+                // Test API Token
+                const response = await fetch(`${API_BASE}/service/list?token=${token}`);
+                
+                if (response.ok) {
+                    apiToken = token;
+                    localStorage.setItem('apiToken', token);
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('dashboard').classList.add('active');
+                    document.getElementById('tokenDisplay').textContent = `Token: ${token.substring(0, 10)}...`;
+                    loadDashboard();
+                } else {
+                    showError('loginError', 'Ungültiger API Token');
+                }
+            } catch (error) {
+                showError('loginError', 'Verbindungsfehler: ' + error.message);
+            }
+        });
+
+        // Check for saved token
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedToken = localStorage.getItem('apiToken');
+            if (savedToken) {
+                document.getElementById('apiKey').value = savedToken;
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('apiToken');
+            location.reload();
+        }
+
+        function showError(elementId, message) {
+            const errorDiv = document.getElementById(elementId);
+            errorDiv.innerHTML = `<div class="error">${message}</div>`;
+            setTimeout(() => errorDiv.innerHTML = '', 5000);
+        }
+
+        function showSuccess(elementId, message) {
+            const successDiv = document.getElementById(elementId);
+            successDiv.innerHTML = `<div class="success">${message}</div>`;
+            setTimeout(() => successDiv.innerHTML = '', 5000);
+        }
+
+        function switchTab(tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const url = `${API_BASE}${endpoint}${endpoint.includes('?') ? '&' : '?'}token=${apiToken}`;
+            const options = {
+                method,
+                headers: {}
+            };
+            
+            if (body && method !== 'GET') {
+                if (body instanceof FormData) {
+                    options.body = body;
+                } else {
+                    options.headers['Content-Type'] = 'application/json';
+                    options.body = JSON.stringify(body);
+                }
+            }
+            
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || `HTTP ${response.status}`);
+            }
+            return response.json();
+        }
+
+        async function loadDashboard() {
+            loadServices();
+            loadKVMPackets();
+        }
+
+        // Services
+        async function loadServices() {
+            try {
+                const services = await apiCall('/service/list');
+                displayServices(services);
+            } catch (error) {
+                document.getElementById('servicesList').innerHTML = `<div class="error">Fehler: ${error.message}</div>`;
+            }
+        }
+
+        function displayServices(services) {
+            const container = document.getElementById('servicesList');
+            
+            if (!services || services.length === 0) {
+                container.innerHTML = '<p>Keine Services gefunden.</p>';
+                return;
+            }
+            
+            let html = '<div class="card-grid">';
+            services.forEach(service => {
+                const daysLeft = service.daysleft || 0;
+                const statusClass = daysLeft > 7 ? 'status-active' : 'status-warning';
+                
+                html += `
+                    <div class="card">
+                        <h3>${service.productdisplay || 'Unbekannt'}</h3>
+                        ${service.name ? `<p><strong>${service.name}</strong></p>` : ''}
+                        <div class="card-detail">
+                            <span class="card-label">Service ID:</span>
+                            <span class="card-value">${service.id}</span>
+                        </div>
+                        <div class="card-detail">
+                            <span class="card-label">IP:</span>
+                            <span class="card-value">${service.ip || 'N/A'}</span>
+                        </div>
+                        <div class="card-detail">
+                            <span class="card-label">Preis:</span>
+                            <span class="card-value">€${service.price || '0.00'}</span>
+                        </div>
+                        <div class="card-detail">
+                            <span class="card-label">Verbleibend:</span>
+                            <span class="card-value ${statusClass}">${daysLeft} Tage</span>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn-small btn-primary" onclick="viewServiceDetails('${service.id}')">Details</button>
+                            <button class="btn-small btn-success" onclick="startService('${service.id}')">Start</button>
+                            <button class="btn-small btn-danger" onclick="stopService('${service.id}')">Stop</button>
+                            <button class="btn-small btn-secondary" onclick="restartService('${service.id}')">Restart</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        async function viewServiceDetails(serviceId) {
+            try {
+                const [info, status, os, ips] = await Promise.all([
+                    apiCall(`/service/${serviceId}`),
+                    apiCall(`/service/${serviceId}/status`),
+                    apiCall(`/service/${serviceId}/os`),
+                    apiCall(`/service/${serviceId}/ip`)
+                ]);
+                
+                const service = info.service;
+                const product = info.product;
+                const display = info.display;
+                
+                // Find current OS name
+                let currentOSName = 'Unbekannt';
+                if (os && os.length > 0) {
+                    const currentOS = os.find(o => o.id === product.os);
+                    if (currentOS) {
+                        currentOSName = currentOS.displayname;
+                    }
+                }
+                
+                // Calculate expiry date
+                const expiryDate = new Date(service.expire_at * 1000).toLocaleString('de-DE');
+                const createdDate = new Date(service.created_on * 1000).toLocaleString('de-DE');
+                
+                let html = `
+                    <div style="max-height: 70vh; overflow-y: auto;">
+                        <!-- Status Header -->
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                            <h3 style="margin: 0 0 10px 0;">${service.productdisplay}${service.name ? ' - ' + service.name : ''}</h3>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <span class="status-badge status-${status.status}">${status.status}</span>
+                                ${product.rescue ? '<span class="status-badge" style="background: #fff3cd; color: #856404;">Rescue Mode</span>' : ''}
+                                ${service.locked ? '<span class="status-badge status-stopped">Gesperrt</span>' : ''}
+                                ${product.plannedmaintenance ? '<span class="status-badge" style="background: #fff3cd; color: #856404;">Wartung geplant</span>' : ''}
+                            </div>
+                        </div>
+
+                        <!-- Server Informationen -->
+                        <h3 style="border-bottom: 2px solid #e1e8ed; padding-bottom: 10px; margin-top: 20px;">🖥️ Server Informationen</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                            <div class="card-detail">
+                                <span class="card-label">Hostname:</span>
+                                <span class="card-value">${product.hostname}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">VM ID:</span>
+                                <span class="card-value">#${product.proxmoxid}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Node:</span>
+                                <span class="card-value">${product.node}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Cluster:</span>
+                                <span class="card-value">${product.clusterinfo.displayname}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Standort:</span>
+                                <span class="card-value">${product.location}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">MAC-Adresse:</span>
+                                <span class="card-value">${product.mac}</span>
+                            </div>
+                        </div>
+
+                        <!-- Hardware Spezifikationen -->
+                        <h3 style="border-bottom: 2px solid #e1e8ed; padding-bottom: 10px; margin-top: 20px;">⚙️ Hardware</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                            <div class="card-detail">
+                                <span class="card-label">CPU Kerne:</span>
+                                <span class="card-value">${product.cores} Cores</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">CPU Typ:</span>
+                                <span class="card-value">${product.cputype}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">RAM:</span>
+                                <span class="card-value">${(product.memory / 1024).toFixed(0)} GB</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Speicher:</span>
+                                <span class="card-value">${(product.disk / 1024).toFixed(0)} GB${product.extradisk ? ' (+Extra)' : ''}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Uplink:</span>
+                                <span class="card-value">${product.uplink} Mbit/s (Max: ${product.maxuplink})</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Traffic:</span>
+                                <span class="card-value">${product.additionaltraffic} TB${product.trafficlimitreached ? ' <span style="color: #dc3545;">⚠️ Limit</span>' : ''}</span>
+                            </div>
+                        </div>
+
+                        <!-- Betriebssystem & Zugang -->
+                        <h3 style="border-bottom: 2px solid #e1e8ed; padding-bottom: 10px; margin-top: 20px;">💿 Betriebssystem & Zugang</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                            <div class="card-detail">
+                                <span class="card-label">OS:</span>
+                                <span class="card-value">${currentOSName}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">OS Typ:</span>
+                                <span class="card-value">${product.ostype === 'linux' ? '🐧 Linux' : '🪟 Windows'}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Benutzer:</span>
+                                <span class="card-value">${product.user}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Passwort:</span>
+                                <span class="card-value">
+                                    <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 4px; user-select: all;">${product.password}</code>
+                                </span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Port:</span>
+                                <span class="card-value">${product.port}${product.portblock ? ' <span style="color: #dc3545;">🔒</span>' : ''}</span>
+                            </div>
+                            ${product.iso ? `
+                            <div class="card-detail">
+                                <span class="card-label">ISO:</span>
+                                <span class="card-value">Gemountet</span>
+                            </div>` : ''}
+                        </div>
+
+                        <!-- IP-Adressen -->
+                        <h3 style="border-bottom: 2px solid #e1e8ed; padding-bottom: 10px; margin-top: 20px;">🌐 Netzwerk</h3>
+                        ${ips.ipv4 && ips.ipv4.length > 0 ? `
+                        <h4 style="margin-top: 15px; color: #666;">IPv4</h4>
+                        ${ips.ipv4.map(ip => `
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                                    <div>
+                                        <div style="color: #666; font-size: 12px;">IP-Adresse</div>
+                                        <div style="font-weight: bold; font-size: 16px; color: #667eea;">${ip.ip}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 12px;">Gateway</div>
+                                        <div style="font-weight: bold;">${ip.gw}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 12px;">Netmask</div>
+                                        <div style="font-weight: bold;">${ip.netmask} (/${ip.subnet})</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 12px;">rDNS</div>
+                                        <div style="font-weight: bold; font-size: 12px;">${ip.rdns || 'Nicht gesetzt'}</div>
+                                    </div>
+                                </div>
+                                ${ip.note ? `<div style="margin-top: 10px; color: #666; font-size: 13px;">📝 ${ip.note}</div>` : ''}
+                            </div>
+                        `).join('')}
+                        ` : ''}
+                        
+                        ${ips.ipv6 && ips.ipv6.length > 0 ? `
+                        <h4 style="margin-top: 15px; color: #666;">IPv6</h4>
+                        ${ips.ipv6.map(ip => `
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                                    <div>
+                                        <div style="color: #666; font-size: 12px;">Subnet</div>
+                                        <div style="font-weight: bold; font-size: 14px; color: #667eea;">${ip.subnet}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 12px;">Gateway</div>
+                                        <div style="font-weight: bold;">${ip.gw}</div>
+                                    </div>
+                                    <div>
+                                        <div style="color: #666; font-size: 12px;">Erste IP</div>
+                                        <div style="font-weight: bold;">${ip.firstip}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                        ` : ''}
+
+                        <!-- Service Details -->
+                        <h3 style="border-bottom: 2px solid #e1e8ed; padding-bottom: 10px; margin-top: 20px;">📋 Service Details</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                            <div class="card-detail">
+                                <span class="card-label">Service ID:</span>
+                                <span class="card-value" style="font-size: 11px;">${service.id}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Erstellt am:</span>
+                                <span class="card-value">${createdDate}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Läuft ab am:</span>
+                                <span class="card-value">${expiryDate}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Verbleibend:</span>
+                                <span class="card-value" style="color: ${service.daysleft > 7 ? '#28a745' : '#dc3545'};">${service.daysleft} Tage</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Preis:</span>
+                                <span class="card-value">€${service.price}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Reseller Preis:</span>
+                                <span class="card-value">€${service.resellerrenew}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Auto-Renewal:</span>
+                                <span class="card-value">${service.autorenew ? '✅ Aktiv' : '❌ Inaktiv'}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Favorit:</span>
+                                <span class="card-value">${service.fav ? '⭐' : '-'}</span>
+                            </div>
+                        </div>
+
+                        <!-- Features -->
+                        <h3 style="border-bottom: 2px solid #e1e8ed; padding-bottom: 10px; margin-top: 20px;">✨ Verfügbare Features</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                            ${display.backup ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ Backup</div>' : ''}
+                            ${display.novnc ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ noVNC</div>' : ''}
+                            ${display.livedata ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ Live Daten</div>' : ''}
+                            ${display.cron ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ Cron Jobs</div>' : ''}
+                            ${display.isomount ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ ISO Mount</div>' : ''}
+                            ${display.customisomount ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ Custom ISO</div>' : ''}
+                            ${display.sshkeys ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ SSH Keys</div>' : ''}
+                            ${display.rescue ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ Rescue Mode</div>' : ''}
+                            ${display.passwordreset ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ Passwort Reset</div>' : ''}
+                            ${display.ddoslog ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ DDoS Log</div>' : ''}
+                            ${product.upgrade ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ Upgrade</div>' : ''}
+                            ${product.canunlockports ? '<div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">✅ Port Freischaltung</div>' : ''}
+                            <div style="padding: 8px; background: #d4edda; color: #155724; border-radius: 6px; text-align: center;">💾 ${product.backupslots} Backup Slots</div>
+                        </div>
+
+                        <!-- Verfügbare Betriebssysteme -->
+                        <h3 style="border-bottom: 2px solid #e1e8ed; padding-bottom: 10px; margin-top: 20px;">💿 Verfügbare Betriebssysteme</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin-bottom: 20px;">
+                            ${os.sort((a, b) => a.sort - b.sort).map(osItem => `
+                                <div style="padding: 10px; background: ${osItem.id === product.os ? '#667eea' : '#f8f9fa'}; color: ${osItem.id === product.os ? 'white' : '#333'}; border-radius: 6px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                                    ${osItem.type === 'linux' ? '🐧' : '🪟'}
+                                    <span style="font-weight: ${osItem.id === product.os ? 'bold' : 'normal'};">
+                                        ${osItem.displayname}
+                                        ${osItem.id === product.os ? ' ✓' : ''}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- Aktionen -->
+                        <div style="position: sticky; bottom: 0; background: white; padding: 20px 0; border-top: 2px solid #e1e8ed; margin-top: 20px;">
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button class="btn btn-success" onclick="startService('${serviceId}'); closeModal();">▶️ Starten</button>
+                                <button class="btn btn-danger" onclick="stopService('${serviceId}'); closeModal();">⏹️ Stoppen</button>
+                                <button class="btn btn-secondary" onclick="restartService('${serviceId}'); closeModal();">🔄 Neustarten</button>
+                                <button class="btn btn-primary" onclick="showReinstallModal('${serviceId}', ${JSON.stringify(os).replace(/"/g, '&quot;')})">💿 Neuinstallieren</button>
+                                ${product.canunlockports && product.portblock ? `<button class="btn btn-secondary" onclick="alert('Port-Freischaltung Feature')">🔓 Ports freischalten</button>` : ''}
+                                <button class="btn btn-secondary" onclick="hideService('${serviceId}')">👁️ Ausblenden</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('modalTitle').innerHTML = `<span style="font-size: 20px;">🖥️ Server Details - ${product.hostname}</span>`;
+                document.getElementById('modalBody').innerHTML = html;
+                document.getElementById('modal').classList.add('active');
+            } catch (error) {
+                alert('Fehler beim Laden der Details: ' + error.message);
+            }
+        }
+        
+        function showReinstallModal(serviceId, osList) {
+            const os = JSON.parse(osList.replace(/&quot;/g, '"'));
+            
+            let html = `
+                <h3>Betriebssystem auswählen</h3>
+                <form id="reinstallForm" onsubmit="executeReinstall(event, '${serviceId}')">
+                    <div class="form-group">
+                        <label>Betriebssystem:</label>
+                        <select id="reinstallOS" required style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 6px;">
+                            <optgroup label="Linux Systeme">
+                                ${os.filter(o => o.type === 'linux').sort((a, b) => a.sort - b.sort).map(o => `
+                                    <option value="${o.id}">🐧 ${o.displayname}</option>
+                                `).join('')}
+                            </optgroup>
+                            <optgroup label="Windows Systeme">
+                                ${os.filter(o => o.type === 'windows').sort((a, b) => a.sort - b.sort).map(o => `
+                                    <option value="${o.id}">🪟 ${o.displayname}</option>
+                                `).join('')}
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Root/Administrator Passwort:</label>
+                        <input type="password" id="reinstallPassword" required style="width: 100%; padding: 10px; border: 2px solid #e1e8ed; border-radius: 6px;" placeholder="Neues sicheres Passwort">
+                    </div>
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 6px; margin: 15px 0; color: #856404;">
+                        <strong>⚠️ Warnung:</strong> Alle Daten auf dem Server werden gelöscht!
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Neuinstallation starten</button>
+                </form>
+            `;
+            
+            document.getElementById('modalTitle').textContent = 'Server neuinstallieren';
+            document.getElementById('modalBody').innerHTML = html;
+        }
+        
+        async function executeReinstall(event, serviceId) {
+            event.preventDefault();
+            
+            const osId = document.getElementById('reinstallOS').value;
+            const password = document.getElementById('reinstallPassword').value;
+            
+            if (!confirm('Server wirklich neuinstallieren? Alle Daten gehen verloren!')) {
+                return;
+            }
+            
+            try {
+                const formData = new FormData();
+                formData.append('os', osId);
+                formData.append('password', password);
+                
+                await apiCall(`/service/${serviceId}/reinstall`, 'POST', formData);
+                alert('Neuinstallation gestartet! Dies kann einige Minuten dauern.');
+                closeModal();
+                loadServices();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        async function startService(serviceId) {
+            try {
+                await apiCall(`/service/${serviceId}/start`, 'POST');
+                alert('Service wird gestartet...');
+                loadServices();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        async function stopService(serviceId) {
+            try {
+                await apiCall(`/service/${serviceId}/stop`, 'POST');
+                alert('Service wird gestoppt...');
+                loadServices();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        async function restartService(serviceId) {
+            try {
+                await apiCall(`/service/${serviceId}/restart`, 'POST');
+                alert('Service wird neugestartet...');
+                loadServices();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+
+
+        async function hideService(serviceId) {
+            try {
+                await apiCall(`/service/${serviceId}/hide`, 'POST');
+                alert('Service wurde ausgeblendet');
+                closeModal();
+                loadServices();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        // KVM Server
+        const kvmPackets = [
+            {
+                id: '4785fc89-e49e-47bc-aec2-1af0d44601ef',
+                name: 'Sale 2025 S',
+                price: '3.45',
+                cores: 2,
+                memory: 4,
+                disk: 50,
+                traffic: 10,
+                uplink: 1000,
+                ipv4: 1,
+                ipv6: 1
+            },
+            {
+                id: '89f9b5e6-2a51-4a54-8670-97dd005d38f9',
+                name: 'Sale 2025 M',
+                price: '4.95',
+                cores: 4,
+                memory: 8,
+                disk: 80,
+                traffic: 15,
+                uplink: 1000,
+                ipv4: 1,
+                ipv6: 1
+            },
+            {
+                id: '72704317-ccd4-457c-a36a-9070491fec27',
+                name: 'Sale 2025 L',
+                price: '5.95',
+                cores: 4,
+                memory: 12,
+                disk: 100,
+                traffic: 20,
+                uplink: 1250,
+                ipv4: 1,
+                ipv6: 1
+            },
+            {
+                id: '647ba807-0d83-405a-b816-56983aae3d55',
+                name: 'Sale 2025 XL',
+                price: '7.95',
+                cores: 6,
+                memory: 16,
+                disk: 150,
+                traffic: 25,
+                uplink: 1250,
+                ipv4: 1,
+                ipv6: 1
+            },
+            {
+                id: 'a9793efd-f29d-4b28-9bfd-00a66d6f2339',
+                name: 'Sale 2025 XXL',
+                price: '10.95',
+                cores: 8,
+                memory: 24,
+                disk: 200,
+                traffic: 30,
+                uplink: 1250,
+                ipv4: 1,
+                ipv6: 1
+            },
+            {
+                id: '1c0b463e-831f-4e37-9c44-5065277de5db',
+                name: 'Sale 2025 3XL',
+                price: '15.95',
+                cores: 10,
+                memory: 32,
+                disk: 300,
+                traffic: 40,
+                uplink: 1250,
+                ipv4: 1,
+                ipv6: 1
+            },
+            {
+                id: 'a9baf89a-edb0-4efa-833c-3a827e3c6070',
+                name: 'Sale 2025 5XL',
+                price: '35.95',
+                cores: 16,
+                memory: 64,
+                disk: 500,
+                traffic: 60,
+                uplink: 1250,
+                ipv4: 1,
+                ipv6: 1
+            }
+        ];
+        
+        function loadKVMPackets() {
+            const container = document.querySelector('#kvmPackets .card-grid');
+            
+            let html = '';
+            kvmPackets.forEach(packet => {
+                html += `
+                    <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                        <h3 style="color: white; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px;">
+                            ${packet.name}
+                        </h3>
+                        <div style="font-size: 32px; font-weight: bold; text-align: center; margin: 20px 0;">
+                            ${packet.price} €
+                            <div style="font-size: 14px; font-weight: normal; opacity: 0.9;">pro Monat</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; margin: 15px 0;">
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <span>CPU Kerne:</span>
+                                <strong>${packet.cores} Cores</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <span>RAM:</span>
+                                <strong>${packet.memory} GB</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <span>Speicher:</span>
+                                <strong>${packet.disk} GB NVMe</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <span>Traffic:</span>
+                                <strong>${packet.traffic} TB</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                                <span>Uplink:</span>
+                                <strong>${packet.uplink} Mbit/s</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span>IP-Adressen:</span>
+                                <strong>${packet.ipv4} IPv4 / ${packet.ipv6} IPv6</strong>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-success" onclick="selectPacket('${packet.id}', '${packet.name}')" style="width: 100%; background: white; color: #667eea; font-weight: bold;">
+                                Jetzt bestellen
+                            </button>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 11px; opacity: 0.8; text-align: center;">
+                            ID: ${packet.id}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function selectPacket(packetId, packetName) {
+            // Switch to order form
+            const kvmPacketSelect = document.getElementById('kvmPacketId');
+            kvmPacketSelect.value = packetId;
+            
+            // Scroll to form
+            document.getElementById('orderKVMForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Highlight the form briefly
+            const form = document.getElementById('orderKVMForm').parentElement;
+            form.style.transition = 'all 0.3s';
+            form.style.transform = 'scale(1.02)';
+            form.style.boxShadow = '0 8px 30px rgba(102, 126, 234, 0.4)';
+            
+            setTimeout(() => {
+                form.style.transform = 'scale(1)';
+                form.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+            }, 600);
+        }
+        
+        document.getElementById('orderKVMForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('hostname', document.getElementById('kvmHostname').value);
+            formData.append('os', document.getElementById('kvmOS').value);
+            formData.append('password', document.getElementById('kvmPassword').value);
+            formData.append('ipcount', document.getElementById('kvmIPCount').value);
+            formData.append('trafficcount', document.getElementById('kvmTrafficCount').value);
+            formData.append('days', document.getElementById('kvmDays').value);
+            
+            try {
+                const packetId = document.getElementById('kvmPacketId').value;
+                const result = await apiCall(`/reseller/order/kvm/${packetId}`, 'POST', formData);
+                showSuccess('orderKVMResult', `Server bestellt! Service ID: ${result.id}`);
+                e.target.reset();
+                // Reset to default values
+                document.getElementById('kvmIPCount').value = '0';
+                document.getElementById('kvmTrafficCount').value = '0';
+                document.getElementById('kvmDays').value = '30';
+            } catch (error) {
+                showError('orderKVMResult', error.message);
+            }
+        });
+
+        // Reseller Functions
+        async function loadInterfaceUsers() {
+            const interfaceId = document.getElementById('interfaceId').value;
+            if (!interfaceId) {
+                alert('Bitte Interface ID eingeben');
+                return;
+            }
+            
+            try {
+                const users = await apiCall(`/reseller/interface/${interfaceId}/user/list`);
+                
+                let html = '<table class="table"><thead><tr><th>User ID</th><th>Username</th><th>E-Mail</th><th>Support PIN</th><th>Aktionen</th></tr></thead><tbody>';
+                users.forEach(user => {
+                    html += `
+                        <tr>
+                            <td>${user.userid}</td>
+                            <td>${user.username}</td>
+                            <td>${user.email}</td>
+                            <td>${user.supportpin}</td>
+                            <td class="action-buttons">
+                                <button class="btn-small btn-primary" onclick="viewUserServices('${interfaceId}', '${user.userid}')">Services</button>
+                                <button class="btn-small btn-danger" onclick="deleteUser('${interfaceId}', '${user.userid}')">Löschen</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                
+                document.getElementById('interfaceUsers').innerHTML = html;
+            } catch (error) {
+                document.getElementById('interfaceUsers').innerHTML = `<div class="error">Fehler: ${error.message}</div>`;
+            }
+        }
+
+        async function viewUserServices(interfaceId, userId) {
+            try {
+                const services = await apiCall(`/reseller/interface/${interfaceId}/user/${userId}/service/list`);
+                
+                let html = '<h3>Benutzer Services</h3>';
+                html += '<table class="table"><thead><tr><th>ID</th><th>Service ID</th><th>Aktionen</th></tr></thead><tbody>';
+                services.forEach(service => {
+                    html += `
+                        <tr>
+                            <td>${service.id}</td>
+                            <td>${service.serviceid}</td>
+                            <td>
+                                <button class="btn-small btn-danger" onclick="deleteUserService('${interfaceId}', '${userId}', '${service.id}')">Entfernen</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                
+                document.getElementById('modalTitle').textContent = 'Benutzer Services';
+                document.getElementById('modalBody').innerHTML = html;
+                document.getElementById('modal').classList.add('active');
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        async function deleteUser(interfaceId, userId) {
+            if (!confirm('Benutzer wirklich löschen?')) return;
+            
+            try {
+                await apiCall(`/reseller/interface/${interfaceId}/user/${userId}`, 'DELETE');
+                alert('Benutzer gelöscht');
+                loadInterfaceUsers();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        async function deleteUserService(interfaceId, userId, assignId) {
+            if (!confirm('Service-Zuweisung wirklich entfernen?')) return;
+            
+            try {
+                await apiCall(`/reseller/interface/${interfaceId}/user/${userId}/service/${assignId}`, 'DELETE');
+                alert('Service-Zuweisung entfernt');
+                closeModal();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        document.getElementById('createUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('username', document.getElementById('newUsername').value);
+            formData.append('email', document.getElementById('newUserEmail').value);
+            formData.append('password', document.getElementById('newUserPassword').value);
+            
+            try {
+                const interfaceId = document.getElementById('newUserInterfaceId').value;
+                const result = await apiCall(`/reseller/interface/${interfaceId}/user`, 'POST', formData);
+                showSuccess('createUserResult', `Benutzer erstellt! ID: ${result.id}`);
+                e.target.reset();
+            } catch (error) {
+                showError('createUserResult', error.message);
+            }
+        });
+
+        document.getElementById('extendServiceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('days', document.getElementById('extendDays').value);
+            
+            try {
+                const serviceId = document.getElementById('extendServiceId').value;
+                const result = await apiCall(`/reseller/extend/service/${serviceId}`, 'POST', formData);
+                showSuccess('extendServiceResult', 'Service erfolgreich verlängert!');
+                e.target.reset();
+            } catch (error) {
+                showError('extendServiceResult', error.message);
+            }
+        });
+
+        // Backup Functions
+        async function loadBackups() {
+            const serviceId = document.getElementById('backupServiceId').value;
+            if (!serviceId) {
+                alert('Bitte Service ID eingeben');
+                return;
+            }
+            
+            try {
+                const backups = await apiCall(`/service/${serviceId}/backup`);
+                
+                let html = '<div class="card-grid">';
+                backups.forEach(backup => {
+                    html += `
+                        <div class="card">
+                            <h3>${backup.displayname || 'Backup'}</h3>
+                            <div class="card-detail">
+                                <span class="card-label">ID:</span>
+                                <span class="card-value">${backup.id}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Erstellt:</span>
+                                <span class="card-value">${new Date(backup.created_on).toLocaleString('de-DE')}</span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="card-label">Name:</span>
+                                <span class="card-value">${backup.backupname}</span>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-small btn-success" onclick="restoreBackup('${serviceId}', '${backup.backupname}')">Wiederherstellen</button>
+                                <button class="btn-small btn-danger" onclick="deleteBackup('${serviceId}', '${backup.backupname}')">Löschen</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                document.getElementById('backupsList').innerHTML = html;
+            } catch (error) {
+                document.getElementById('backupsList').innerHTML = `<div class="error">Fehler: ${error.message}</div>`;
+            }
+        }
+
+        async function createBackup() {
+            const serviceId = document.getElementById('backupServiceId').value;
+            if (!serviceId) {
+                alert('Bitte Service ID eingeben');
+                return;
+            }
+            
+            try {
+                await apiCall(`/service/${serviceId}/backup`, 'POST');
+                alert('Backup wird erstellt...');
+                setTimeout(() => loadBackups(), 2000);
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        async function restoreBackup(serviceId, backupName) {
+            if (!confirm('Backup wirklich wiederherstellen? Dies überschreibt den aktuellen Stand!')) return;
+            
+            try {
+                const formData = new FormData();
+                formData.append('backupname', backupName);
+                
+                await apiCall(`/service/${serviceId}/backup/restore`, 'POST', formData);
+                alert('Backup wird wiederhergestellt...');
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        async function deleteBackup(serviceId, backupName) {
+            if (!confirm('Backup wirklich löschen?')) return;
+            
+            try {
+                const formData = new FormData();
+                formData.append('backupname', backupName);
+                
+                await apiCall(`/service/${serviceId}/backup/delete`, 'POST', formData);
+                alert('Backup gelöscht');
+                loadBackups();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        // Cron Functions
+        async function loadCronJobs() {
+            const serviceId = document.getElementById('cronServiceId').value;
+            if (!serviceId) {
+                alert('Bitte Service ID eingeben');
+                return;
+            }
+            
+            try {
+                const crons = await apiCall(`/service/${serviceId}/cron`);
+                
+                let html = '<table class="table"><thead><tr><th>Name</th><th>Expression</th><th>Aktion</th><th>Nächste Ausführung</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>';
+                crons.forEach(cron => {
+                    html += `
+                        <tr>
+                            <td>${cron.displayname}</td>
+                            <td><code>${cron.expression}</code></td>
+                            <td>${cron.action}</td>
+                            <td>${cron.nextexecute ? new Date(cron.nextexecute).toLocaleString('de-DE') : 'N/A'}</td>
+                            <td><span class="status-badge status-${cron.status}">${cron.status}</span></td>
+                            <td>
+                                <button class="btn-small btn-danger" onclick="deleteCronJob('${serviceId}', '${cron.id}')">Löschen</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                
+                document.getElementById('cronJobsList').innerHTML = html;
+            } catch (error) {
+                document.getElementById('cronJobsList').innerHTML = `<div class="error">Fehler: ${error.message}</div>`;
+            }
+        }
+
+        document.getElementById('createCronForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('displayname', document.getElementById('newCronName').value);
+            formData.append('expression', document.getElementById('newCronExpression').value);
+            formData.append('action', document.getElementById('newCronAction').value);
+            
+            try {
+                const serviceId = document.getElementById('newCronServiceId').value;
+                await apiCall(`/service/${serviceId}/cron`, 'POST', formData);
+                showSuccess('createCronResult', 'Cron Job erfolgreich erstellt!');
+                e.target.reset();
+            } catch (error) {
+                showError('createCronResult', error.message);
+            }
+        });
+
+        async function deleteCronJob(serviceId, cronId) {
+            if (!confirm('Cron Job wirklich löschen?')) return;
+            
+            try {
+                await apiCall(`/service/${serviceId}/cron/${cronId}/delete`, 'DELETE');
+                alert('Cron Job gelöscht');
+                loadCronJobs();
+            } catch (error) {
+                alert('Fehler: ' + error.message);
+            }
+        }
+
+        // Network Functions
+        async function loadIPs() {
+            const serviceId = document.getElementById('ipServiceId').value;
+            if (!serviceId) {
+                alert('Bitte Service ID eingeben');
+                return;
+            }
+            
+            try {
+                const ips = await apiCall(`/service/${serviceId}/ip`);
+                
+                let html = '<h3>IPv4 Adressen</h3>';
+                if (ips.ipv4 && ips.ipv4.length > 0) {
+                    html += '<table class="table"><thead><tr><th>IP</th><th>Gateway</th><th>Netmask</th><th>rDNS</th></tr></thead><tbody>';
+                    ips.ipv4.forEach(ip => {
+                        html += `
+                            <tr>
+                                <td>${ip.ip}</td>
+                                <td>${ip.gw}</td>
+                                <td>${ip.netmask}</td>
+                                <td>${ip.rdns || 'Nicht gesetzt'}</td>
+                            </tr>
+                        `;
+                    });
+                    html += '</tbody></table>';
+                } else {
+                    html += '<p>Keine IPv4 Adressen gefunden.</p>';
+                }
+                
+                html += '<h3>IPv6 Adressen</h3>';
+                if (ips.ipv6 && ips.ipv6.length > 0) {
+                    html += '<table class="table"><thead><tr><th>Subnet</th><th>Gateway</th><th>Erste IP</th></tr></thead><tbody>';
+                    ips.ipv6.forEach(ip => {
+                        html += `
+                            <tr>
+                                <td>${ip.subnet}</td>
+                                <td>${ip.gw}</td>
+                                <td>${ip.firstip}</td>
+                            </tr>
+                        `;
+                    });
+                    html += '</tbody></table>';
+                } else {
+                    html += '<p>Keine IPv6 Adressen gefunden.</p>';
+                }
+                
+                document.getElementById('ipsList').innerHTML = html;
+            } catch (error) {
+                document.getElementById('ipsList').innerHTML = `<div class="error">Fehler: ${error.message}</div>`;
+            }
+        }
+
+        document.getElementById('rdnsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('rdns', document.getElementById('rdnsValue').value);
+            
+            try {
+                const serviceId = document.getElementById('rdnsServiceId').value;
+                const ip = document.getElementById('rdnsIP').value;
+                await apiCall(`/service/${serviceId}/ip/${ip}/rdns`, 'POST', formData);
+                showSuccess('rdnsResult', 'rDNS erfolgreich gesetzt!');
+                e.target.reset();
+            } catch (error) {
+                showError('rdnsResult', error.message);
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
