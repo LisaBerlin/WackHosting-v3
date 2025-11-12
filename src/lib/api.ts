@@ -11,12 +11,14 @@ export class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const url = new URL(`${API_BASE_URL}${endpoint}`);
+    url.searchParams.append('token', this.apiKey);
+
+    const response = await fetch(url.toString(), {
       ...options,
       headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Content-Type': 'application/json',
-        ...options.headers,
+      'Content-Type': 'application/json',
+      ...options.headers,
       },
     });
 
