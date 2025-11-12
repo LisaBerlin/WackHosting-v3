@@ -111,7 +111,7 @@ export default function Overview() {
             </p>
           </div>
           <a
-            href="https://petstore.swagger.io/?url=https://backend.datalix.de/v1"
+            href="https://petstore.swagger.io/?url=https://backend.panel.gamestates.de/v1"
             target="_blank"
             rel="noopener noreferrer"
             className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors whitespace-nowrap"

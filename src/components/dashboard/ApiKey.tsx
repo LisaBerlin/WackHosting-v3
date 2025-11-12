@@ -157,7 +157,7 @@ export default function ApiKey() {
         </div>
 
         <a
-          href="https://petstore.swagger.io/?url=https://backend.datalix.de/v1"
+          href="https://petstore.swagger.io/?url=https://backend.panel.gamestates.de/v1"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold transition-colors"
