@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { createApiClient } from '../../lib/api';
-import { Server, Play, Square, RefreshCw, Loader, AlertCircle } from 'lucide-react';
+import { createServiceSyncManager } from '../../lib/serviceSync';
+import { Server, Play, Square, RefreshCw, Loader, AlertCircle, Eye } from 'lucide-react';
+import ServiceDetails from './ServiceDetails';
 
 interface Service {
   id: string;
   name: string;
-  type: string;
-  status: string;
+  productdisplay: string;
+  ip: string;
+  price: string;
+  daysleft: number;
+  status?: string;
 }
 
 export default function Services() {
@@ -16,13 +21,16 @@ export default function Services() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
 
   useEffect(() => {
     loadServices();
+    const interval = setInterval(loadServices, 30000);
+    return () => clearInterval(interval);
   }, [user]);
 
   const loadServices = async () => {
-    if (!user?.api_key) {
+    if (!user?.api_key || !user?.id) {
       setLoading(false);
       return;
     }
@@ -32,6 +40,11 @@ export default function Services() {
       if (client) {
         const data = await client.getServiceList();
         setServices(data || []);
+
+        const syncManager = createServiceSyncManager(client, user.id);
+        if (syncManager) {
+          await syncManager.syncServicesFromAPI();
+        }
       }
     } catch (err) {
       setError('Failed to load services. Make sure your API key is configured.');
@@ -109,23 +122,40 @@ export default function Services() {
 
   if (services.length === 0) {
     return (
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-slate-700/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Server className="text-slate-400" size={32} />
+      <div className="space-y-6">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">Your Services</h2>
+              <p className="text-slate-400">Manage and monitor your active services</p>
+            </div>
+            <button
+              onClick={loadServices}
+              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors flex items-center space-x-2"
+            >
+              <RefreshCw size={16} />
+              <span>Refresh</span>
+            </button>
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">No Services Yet</h3>
-          <p className="text-slate-400 mb-6">
-            You don't have any services yet. Order your first server to get started.
-          </p>
-          <a
-            href="https://panel.gamestates.de/orderproduct"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-          >
-            Order a Service
-          </a>
+        </div>
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-8 border border-slate-700">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-slate-700/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Server className="text-slate-400" size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">No Services Yet</h3>
+            <p className="text-slate-400 mb-6">
+              You don't have any services yet. Order your first server to get started.
+            </p>
+            <a
+              href="https://panel.gamestates.de/orderproduct"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+            >
+              Order a Service
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -160,21 +190,36 @@ export default function Services() {
                 <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
                   <Server className="text-blue-400" size={24} />
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-1">{service.name}</h3>
-                  <p className="text-slate-400 text-sm mb-2">{service.type}</p>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      service.status === 'running' ? 'bg-green-400' :
-                      service.status === 'stopped' ? 'bg-red-400' :
-                      'bg-yellow-400'
-                    }`}></div>
-                    <span className="text-sm text-slate-400 capitalize">{service.status}</span>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-white mb-1">{service.productdisplay}</h3>
+                  {service.name && <p className="text-slate-300 text-sm mb-2">{service.name}</p>}
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-slate-500">IP:</span>
+                      <span className="text-slate-300 ml-2">{service.ip || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Preis:</span>
+                      <span className="text-slate-300 ml-2">€{service.price}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Verbleibend:</span>
+                      <span className={`ml-2 font-semibold ${
+                        service.daysleft > 7 ? 'text-green-400' : 'text-red-400'
+                      }`}>{service.daysleft} Tage</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => setSelectedService(service.id)}
+                  className="px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-600/30 text-blue-400 rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <Eye size={16} />
+                  <span>Details</span>
+                </button>
                 <button
                   onClick={() => handleServiceAction(service.id, 'start')}
                   disabled={actionLoading === `${service.id}-start`}
@@ -204,7 +249,7 @@ export default function Services() {
                 <button
                   onClick={() => handleServiceAction(service.id, 'restart')}
                   disabled={actionLoading === `${service.id}-restart`}
-                  className="px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-600/30 text-blue-400 rounded-lg transition-colors disabled:opacity-50 flex items-center space-x-2"
+                  className="px-4 py-2 bg-slate-600/20 hover:bg-slate-600/30 border border-slate-600/30 text-slate-300 rounded-lg transition-colors disabled:opacity-50 flex items-center space-x-2"
                 >
                   {actionLoading === `${service.id}-restart` ? (
                     <Loader size={16} className="animate-spin" />
@@ -218,6 +263,15 @@ export default function Services() {
           </div>
         ))}
       </div>
+
+      {selectedService && user?.api_key && (
+        <ServiceDetails
+          serviceId={selectedService}
+          apiKey={user.api_key}
+          onClose={() => setSelectedService(null)}
+          onRefresh={loadServices}
+        />
+      )}
     </div>
   );
 }
